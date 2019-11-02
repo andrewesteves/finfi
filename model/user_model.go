@@ -7,3 +7,7 @@ type UserModel struct {
 	Password string `json:"password"`
 	Role     string `json:"role"`
 }
+
+func (u UserModel) All() []UserModel {
+	return []UserModel{}
+}

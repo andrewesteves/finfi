@@ -14,3 +14,19 @@ type IncomeModel struct {
 	CreatedAt    time.Time   `json:"created_at"`
 	UpdatedAt    time.Time   `json:"updated_at"`
 }
+
+func (i IncomeModel) All() []IncomeModel {
+	return []IncomeModel{
+		IncomeModel{
+			Title: "Item 01",
+			Client: ClientModel{
+				Name:  "Bill Gates",
+				Email: "bill@microsoft.com",
+			},
+			Description:  "Lorem ipsum...",
+			Status:       "Paid",
+			Installments: 0,
+			Total:        100.00,
+		},
+	}
+}
