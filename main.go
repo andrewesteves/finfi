@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	fmt.Println("Finfi finacial")
+	fmt.Println("Finfi financial")
 }
