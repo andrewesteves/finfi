@@ -68,6 +68,7 @@ func (i IncomeController) Update() http.HandlerFunc {
 			Installments: 0,
 			Total:        100.00,
 		}
+		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(income)
 	}
@@ -88,6 +89,7 @@ func (i IncomeController) Destroy() http.HandlerFunc {
 			Installments: 0,
 			Total:        100.00,
 		}
+		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(income)
 	}
