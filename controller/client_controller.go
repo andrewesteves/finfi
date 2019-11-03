@@ -2,9 +2,9 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/andrewesteves/finfi/model"
 	"github.com/gorilla/mux"
@@ -24,11 +24,12 @@ func (c ClientController) Index() http.HandlerFunc {
 func (c ClientController) Show() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		id := vars["id"]
-		client := model.ClientModel{
-			Name:  fmt.Sprintf("Bill Gates %v", id),
-			Email: "bill@microsoft.com",
+		param := vars["id"]
+		id, err := strconv.Atoi(param)
+		if err != nil {
+			panic(err.Error())
 		}
+		client := model.ClientModel{}.Find(id)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(client)
@@ -42,34 +43,32 @@ func (c ClientController) Store() http.HandlerFunc {
 		json.Unmarshal(reqBody, &client)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(client)
+		json.NewEncoder(w).Encode(client.Insert(client))
 	}
 }
 
 func (c ClientController) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var client model.ClientModel
 		vars := mux.Vars(r)
-		id := vars["id"]
-		client := model.ClientModel{
-			Name:  fmt.Sprintf("Bill Gates %v", id),
-			Email: "bill@microsoft.com",
-		}
+		param := vars["id"]
+		id, _ := strconv.Atoi(param)
+		reqBody, _ := ioutil.ReadAll(r.Body)
+		json.Unmarshal(reqBody, &client)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(client)
+		json.NewEncoder(w).Encode(client.Update(id))
 	}
 }
 
 func (c ClientController) Destroy() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var client model.ClientModel
 		vars := mux.Vars(r)
-		id := vars["id"]
-		client := model.ClientModel{
-			Name:  fmt.Sprintf("Bill Gates %v", id),
-			Email: "bill@microsoft.com",
-		}
+		param := vars["id"]
+		id, _ := strconv.Atoi(param)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(client)
+		json.NewEncoder(w).Encode(client.Destroy(id))
 	}
 }
