@@ -13,7 +13,7 @@ func Serve() *mux.Router {
 	var income controller.IncomeController
 
 	mux := mux.NewRouter().StrictSlash(true)
-	mux.HandleFunc("/users", user.Routes())
+	mux.HandleFunc("/users", user.Index())
 	mux.HandleFunc("/clients", client.Index()).Methods("GET")
 	mux.HandleFunc("/clients", client.Store()).Methods("POST")
 	mux.HandleFunc("/clients/{id}", client.Show()).Methods("GET")

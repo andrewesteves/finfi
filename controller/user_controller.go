@@ -9,12 +9,11 @@ import (
 
 type UserController struct{}
 
-func (u UserController) Routes() http.HandlerFunc {
+func (u UserController) Index() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			users := model.UserModel{}
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(users.All())
-		}
+		users := model.UserModel{}
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(users.All())
 	}
 }
