@@ -31,3 +31,14 @@ func (u UserModel) All() []UserModel {
 
 	return users
 }
+
+func (u UserModel) Find(id int) UserModel {
+	var user UserModel
+	db := storage.Connection()
+	defer db.Close()
+	err := db.QueryRow("SELECT id, name, email, role FROM users WHERE id = ?", id).Scan(&user.ID, &user.Name, &user.Email, &user.Role)
+	if err != nil {
+		panic(err.Error())
+	}
+	return user
+}
