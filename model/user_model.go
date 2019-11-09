@@ -50,11 +50,11 @@ func (u UserModel) Find(id int) UserModel {
 func (u UserModel) Insert() UserModel {
 	db := storage.Connection()
 	defer db.Close()
-	bytes, err := bcrypt.GenerateFromPassword([]byte(u.Password), 14)
+	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), 14)
 	if err != nil {
 		panic(err.Error())
 	}
-	u.Password = string(bytes)
+	u.Password = string(hash)
 	rs, err := db.Exec("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)", u.Name, u.Email, u.Password, u.Role)
 	if err != nil {
 		panic(err.Error())
@@ -64,5 +64,39 @@ func (u UserModel) Insert() UserModel {
 		panic(err.Error())
 	}
 	u.ID = int(id)
+	return u
+}
+
+func (u UserModel) Update(id int) UserModel {
+	db := storage.Connection()
+	defer db.Close()
+	user := u.Find(id)
+	if u.Password != "" {
+		hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), 14)
+		if err != nil {
+			panic(err.Error())
+		}
+		u.Password = string(hash)
+	} else {
+		u.Password = user.Password
+	}
+	rs, err := db.Prepare("UPDATE users SET name = ?, email = ?, password = ?, role = ? WHERE id = ?")
+	if err != nil {
+		panic(err.Error())
+	}
+	rs.Exec(u.Name, u.Email, u.Password, u.Role, id)
+	u.ID = id
+	return u
+}
+
+func (u UserModel) Destroy(id int) UserModel {
+	db := storage.Connection()
+	defer db.Close()
+	rs, err := db.Prepare("DELETE FROM users WHERE id = ?")
+	if err != nil {
+		panic(err.Error())
+	}
+	rs.Exec(id)
+	u.ID = id
 	return u
 }
