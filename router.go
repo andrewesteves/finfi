@@ -15,6 +15,7 @@ func Serve() *mux.Router {
 	mux := mux.NewRouter().StrictSlash(true)
 	mux.HandleFunc("/users", user.Index()).Methods("GET")
 	mux.HandleFunc("/users/{id}", user.Show()).Methods("GET")
+	mux.HandleFunc("/users", user.Store()).Methods("POST")
 	mux.HandleFunc("/clients", client.Index()).Methods("GET")
 	mux.HandleFunc("/clients", client.Store()).Methods("POST")
 	mux.HandleFunc("/clients/{id}", client.Show()).Methods("GET")

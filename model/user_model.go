@@ -3,7 +3,7 @@ package model
 import "github.com/andrewesteves/finfi/storage"
 
 type UserModel struct {
-	ID       string `json:"id"`
+	ID       int    `json:"id"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -41,4 +41,19 @@ func (u UserModel) Find(id int) UserModel {
 		panic(err.Error())
 	}
 	return user
+}
+
+func (u UserModel) Insert() UserModel {
+	db := storage.Connection()
+	defer db.Close()
+	rs, err := db.Exec("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)", u.Name, u.Email, u.Password, u.Role)
+	if err != nil {
+		panic(err.Error())
+	}
+	id, err := rs.LastInsertId()
+	if err != nil {
+		panic(err.Error())
+	}
+	u.ID = int(id)
+	return u
 }

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -32,5 +33,16 @@ func (u UserController) Show() http.HandlerFunc {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(user)
+	}
+}
+
+func (u UserController) Store() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var user model.UserModel
+		reqBody, _ := ioutil.ReadAll(r.Body)
+		json.Unmarshal(reqBody, &user)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(user.Insert())
 	}
 }

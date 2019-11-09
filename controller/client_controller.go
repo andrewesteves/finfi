@@ -43,7 +43,7 @@ func (c ClientController) Store() http.HandlerFunc {
 		json.Unmarshal(reqBody, &client)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(client.Insert(client))
+		json.NewEncoder(w).Encode(client.Insert())
 	}
 }
 

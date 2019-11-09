@@ -43,10 +43,10 @@ func (c ClientModel) Find(id int) ClientModel {
 	return client
 }
 
-func (c ClientModel) Insert(client ClientModel) ClientModel {
+func (c ClientModel) Insert() ClientModel {
 	db := storage.Connection()
 	defer db.Close()
-	rs, err := db.Exec("INSERT INTO clients (name, email, phone, description) VALUES (?,?,?,?)", client.Name, client.Email, client.Phone, client.Description)
+	rs, err := db.Exec("INSERT INTO clients (name, email, phone, description) VALUES (?,?,?,?)", c.Name, c.Email, c.Phone, c.Description)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -54,8 +54,8 @@ func (c ClientModel) Insert(client ClientModel) ClientModel {
 	if err != nil {
 		panic(err.Error())
 	}
-	client.ID = int(id)
-	return client
+	c.ID = int(id)
+	return c
 }
 
 func (c ClientModel) Update(id int) ClientModel {
