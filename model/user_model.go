@@ -1,6 +1,9 @@
 package model
 
-import "github.com/andrewesteves/finfi/storage"
+import (
+	"github.com/andrewesteves/finfi/storage"
+	"golang.org/x/crypto/bcrypt"
+)
 
 type UserModel struct {
 	ID       int    `json:"id"`
@@ -8,6 +11,7 @@ type UserModel struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Role     string `json:"role"`
+	ApiToken string `json:"api_token"`
 }
 
 func (u UserModel) All() []UserModel {
@@ -46,6 +50,11 @@ func (u UserModel) Find(id int) UserModel {
 func (u UserModel) Insert() UserModel {
 	db := storage.Connection()
 	defer db.Close()
+	bytes, err := bcrypt.GenerateFromPassword([]byte(u.Password), 14)
+	if err != nil {
+		panic(err.Error())
+	}
+	u.Password = string(bytes)
 	rs, err := db.Exec("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)", u.Name, u.Email, u.Password, u.Role)
 	if err != nil {
 		panic(err.Error())
