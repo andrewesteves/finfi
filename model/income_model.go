@@ -36,6 +36,7 @@ func (i IncomeModel) All() []IncomeModel {
 		if err != nil {
 			panic(err.Error())
 		}
+		income.Client = ClientModel{}.Find(income.Client.ID)
 		incomes = append(incomes, income)
 	}
 
