@@ -1,8 +1,13 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/andrewesteves/finfi/storage"
+)
 
 type IncomeModel struct {
+	ID           int         `json:"id"`
 	Title        string      `json:"title"`
 	Client       ClientModel `json:"client"`
 	Description  string      `json:"description"`
@@ -16,17 +21,23 @@ type IncomeModel struct {
 }
 
 func (i IncomeModel) All() []IncomeModel {
-	return []IncomeModel{
-		IncomeModel{
-			Title: "Item 01",
-			Client: ClientModel{
-				Name:  "Bill Gates",
-				Email: "bill@microsoft.com",
-			},
-			Description:  "Lorem ipsum...",
-			Status:       "Paid",
-			Installments: 0,
-			Total:        100.00,
-		},
+	var incomes []IncomeModel
+	db := storage.Connection()
+	defer db.Close()
+
+	rs, err := db.Query("SELECT id, client_id, title, description, status, installments, total, expired_at, paid_at, created_at, updated_at FROM incomes")
+	if err != nil {
+		panic(err.Error())
 	}
+
+	for rs.Next() {
+		var income IncomeModel
+		err = rs.Scan(&income.ID, &income.Client.ID, &income.Title, &income.Description, &income.Status, &income.Installments, &income.Total, &income.ExpiredAt, &income.PaidAt, &income.CreatedAt, &income.UpdatedAt)
+		if err != nil {
+			panic(err.Error())
+		}
+		incomes = append(incomes, income)
+	}
+
+	return incomes
 }
