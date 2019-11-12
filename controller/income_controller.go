@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/andrewesteves/finfi/model"
 	"github.com/gorilla/mux"
@@ -24,18 +25,12 @@ func (i IncomeController) Index() http.HandlerFunc {
 func (i IncomeController) Show() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		id := vars["id"]
-		income := model.IncomeModel{
-			Title: fmt.Sprintf("Item %v", id),
-			Client: model.ClientModel{
-				Name:  "Bill Gates",
-				Email: "bill@microsoft.com",
-			},
-			Description:  "Lorem ipsum...",
-			Status:       "Paid",
-			Installments: 0,
-			Total:        100.00,
+		param := vars["id"]
+		id, err := strconv.Atoi(param)
+		if err != nil {
+			panic(err.Error())
 		}
+		income := model.IncomeModel{}.Find(id)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(income)
