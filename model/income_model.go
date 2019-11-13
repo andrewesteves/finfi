@@ -53,3 +53,18 @@ func (i IncomeModel) Find(id int) IncomeModel {
 	}
 	return income
 }
+
+func (i IncomeModel) Store() IncomeModel {
+	db := storage.Connection()
+	defer db.Close()
+	rs, err := db.Exec("INSERT INTO incomes (client_id, title, description, status, installments, total, expired_at, paid_at, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,now())", i.Client.ID, i.Title, i.Description, i.Status, i.Installments, i.Total, i.ExpiredAt, i.PaidAt, i.CreatedAt)
+	if err != nil {
+		panic(err.Error())
+	}
+	id, err := rs.LastInsertId()
+	if err != nil {
+		panic(err.Error())
+	}
+	i.ID = int(id)
+	return i
+}

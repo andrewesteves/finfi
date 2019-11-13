@@ -44,7 +44,7 @@ func (i IncomeController) Store() http.HandlerFunc {
 		json.Unmarshal(reqBody, &income)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(income)
+		json.NewEncoder(w).Encode(income.Store())
 	}
 }
 
