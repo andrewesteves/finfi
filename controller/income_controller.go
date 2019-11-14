@@ -44,28 +44,21 @@ func (i IncomeController) Store() http.HandlerFunc {
 		json.Unmarshal(reqBody, &income)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(income.Store())
+		json.NewEncoder(w).Encode(income.Insert())
 	}
 }
 
 func (i IncomeController) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		income := model.IncomeModel{}
 		vars := mux.Vars(r)
-		id := vars["id"]
-		income := model.IncomeModel{
-			Title: fmt.Sprintf("Item %v", id),
-			Client: model.ClientModel{
-				Name:  "Bill Gates",
-				Email: "bill@microsoft.com",
-			},
-			Description:  "Lorem ipsum...",
-			Status:       "Paid",
-			Installments: 0,
-			Total:        100.00,
-		}
+		param := vars["id"]
+		id, _ := strconv.Atoi(param)
+		reqBody, _ := ioutil.ReadAll(r.Body)
+		json.Unmarshal(reqBody, &income)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(income)
+		json.NewEncoder(w).Encode(income.Update(id))
 	}
 }
 
