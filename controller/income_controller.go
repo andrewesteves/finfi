@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -64,21 +63,12 @@ func (i IncomeController) Update() http.HandlerFunc {
 
 func (i IncomeController) Destroy() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		income := model.IncomeModel{}
 		vars := mux.Vars(r)
-		id := vars["id"]
-		income := model.IncomeModel{
-			Title: fmt.Sprintf("Item %v", id),
-			Client: model.ClientModel{
-				Name:  "Bill Gates",
-				Email: "bill@microsoft.com",
-			},
-			Description:  "Lorem ipsum...",
-			Status:       "Paid",
-			Installments: 0,
-			Total:        100.00,
-		}
+		param := vars["id"]
+		id, _ := strconv.Atoi(param)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(income)
+		json.NewEncoder(w).Encode(income.Destroy(id))
 	}
 }

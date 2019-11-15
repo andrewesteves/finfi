@@ -80,3 +80,15 @@ func (i IncomeModel) Update(id int) IncomeModel {
 	i.ID = id
 	return i
 }
+
+func (i IncomeModel) Destroy(id int) IncomeModel {
+	db := storage.Connection()
+	defer db.Close()
+	rs, err := db.Prepare("DELETE FROM incomes WHERE id = ?")
+	if err != nil {
+		panic(err.Error())
+	}
+	rs.Exec(id)
+	i.ID = id
+	return i
+}
