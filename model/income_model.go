@@ -51,6 +51,7 @@ func (i IncomeModel) Find(id int) IncomeModel {
 	if err != nil {
 		panic(err.Error())
 	}
+	income.Client = ClientModel{}.Find(income.Client.ID)
 	return income
 }
 
