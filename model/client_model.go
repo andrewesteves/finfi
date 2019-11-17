@@ -1,6 +1,8 @@
 package model
 
-import "github.com/andrewesteves/finfi/storage"
+import (
+	"github.com/andrewesteves/finfi/storage"
+)
 
 type ClientModel struct {
 	ID          int    `json:"id"`
@@ -8,6 +10,11 @@ type ClientModel struct {
 	Email       string `json:"email"`
 	Phone       string `json:"phone"`
 	Description string `json:"description"`
+}
+
+type Errors struct {
+	Field   string `json:"field"`
+	Message string `json:"message"`
 }
 
 func (c ClientModel) All() []ClientModel {
@@ -43,7 +50,11 @@ func (c ClientModel) Find(id int) ClientModel {
 	return client
 }
 
-func (c ClientModel) Insert() ClientModel {
+func (c ClientModel) Insert() (ClientModel, []Errors) {
+	if hasErrors := validate(c); len(hasErrors) > 0 {
+		return c, hasErrors
+	}
+
 	db := storage.Connection()
 	defer db.Close()
 	rs, err := db.Exec("INSERT INTO clients (name, email, phone, description) VALUES (?,?,?,?)", c.Name, c.Email, c.Phone, c.Description)
@@ -55,7 +66,7 @@ func (c ClientModel) Insert() ClientModel {
 		panic(err.Error())
 	}
 	c.ID = int(id)
-	return c
+	return c, nil
 }
 
 func (c ClientModel) Update(id int) ClientModel {
@@ -80,4 +91,15 @@ func (c ClientModel) Destroy(id int) ClientModel {
 	rs.Exec(id)
 	c.ID = id
 	return c
+}
+
+func validate(c ClientModel) []Errors {
+	var errs []Errors
+	if c.Name == "" {
+		errs = append(errs, Errors{"name", "The name field is required"})
+	}
+	if c.Email == "" {
+		errs = append(errs, Errors{"email", "The e-mail field is required"})
+	}
+	return errs
 }
