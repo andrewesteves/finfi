@@ -69,7 +69,10 @@ func (c ClientModel) Insert() (ClientModel, []Errors) {
 	return c, nil
 }
 
-func (c ClientModel) Update(id int) ClientModel {
+func (c ClientModel) Update(id int) (ClientModel, []Errors) {
+	if hasErrors := validate(c); len(hasErrors) > 0 {
+		return c, hasErrors
+	}
 	db := storage.Connection()
 	defer db.Close()
 	rs, err := db.Prepare("UPDATE clients SET name = ?, email = ?, phone = ?, description = ? WHERE id = ?")
@@ -78,7 +81,7 @@ func (c ClientModel) Update(id int) ClientModel {
 	}
 	rs.Exec(c.Name, c.Email, c.Phone, c.Description, id)
 	c.ID = id
-	return c
+	return c, nil
 }
 
 func (c ClientModel) Destroy(id int) ClientModel {

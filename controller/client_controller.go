@@ -62,7 +62,12 @@ func (c ClientController) Update() http.HandlerFunc {
 		json.Unmarshal(reqBody, &client)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(client.Update(id))
+		cNew, err := client.Update(id)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(cNew)
+		}
 	}
 }
 
