@@ -47,7 +47,11 @@ func (u UserModel) Find(id int) UserModel {
 	return user
 }
 
-func (u UserModel) Insert() UserModel {
+func (u UserModel) Insert() (UserModel, []Errors) {
+	if hasErrors := userValidate(u); len(hasErrors) > 0 {
+		return u, hasErrors
+	}
+
 	db := storage.Connection()
 	defer db.Close()
 	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), 14)
@@ -64,7 +68,7 @@ func (u UserModel) Insert() UserModel {
 		panic(err.Error())
 	}
 	u.ID = int(id)
-	return u
+	return u, nil
 }
 
 func (u UserModel) Update(id int) UserModel {
@@ -99,4 +103,15 @@ func (u UserModel) Destroy(id int) UserModel {
 	rs.Exec(id)
 	u.ID = id
 	return u
+}
+
+func userValidate(u UserModel) []Errors {
+	var errs []Errors
+	if u.Name == "" {
+		errs = append(errs, Errors{"name", "The name field is required"})
+	}
+	if u.Email == "" {
+		errs = append(errs, Errors{"email", "The e-mail field is required"})
+	}
+	return errs
 }

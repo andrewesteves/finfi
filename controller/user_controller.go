@@ -43,7 +43,12 @@ func (u UserController) Store() http.HandlerFunc {
 		json.Unmarshal(reqBody, &user)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(user.Insert())
+		uNew, err := user.Insert()
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(uNew)
+		}
 	}
 }
 

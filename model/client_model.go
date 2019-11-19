@@ -51,7 +51,7 @@ func (c ClientModel) Find(id int) ClientModel {
 }
 
 func (c ClientModel) Insert() (ClientModel, []Errors) {
-	if hasErrors := validate(c); len(hasErrors) > 0 {
+	if hasErrors := clientValidate(c); len(hasErrors) > 0 {
 		return c, hasErrors
 	}
 
@@ -70,7 +70,7 @@ func (c ClientModel) Insert() (ClientModel, []Errors) {
 }
 
 func (c ClientModel) Update(id int) (ClientModel, []Errors) {
-	if hasErrors := validate(c); len(hasErrors) > 0 {
+	if hasErrors := clientValidate(c); len(hasErrors) > 0 {
 		return c, hasErrors
 	}
 	db := storage.Connection()
@@ -96,7 +96,7 @@ func (c ClientModel) Destroy(id int) ClientModel {
 	return c
 }
 
-func validate(c ClientModel) []Errors {
+func clientValidate(c ClientModel) []Errors {
 	var errs []Errors
 	if c.Name == "" {
 		errs = append(errs, Errors{"name", "The name field is required"})
