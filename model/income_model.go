@@ -55,7 +55,11 @@ func (i IncomeModel) Find(id int) IncomeModel {
 	return income
 }
 
-func (i IncomeModel) Insert() IncomeModel {
+func (i IncomeModel) Insert() (IncomeModel, []Errors) {
+	if hasErrors := incomeValidate(i); len(hasErrors) > 0 {
+		return i, hasErrors
+	}
+
 	db := storage.Connection()
 	defer db.Close()
 	rs, err := db.Exec("INSERT INTO incomes (client_id, title, description, status, installments, total, expired_at, paid_at, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,now())", i.Client.ID, i.Title, i.Description, i.Status, i.Installments, i.Total, i.ExpiredAt, i.PaidAt, i.CreatedAt)
@@ -67,7 +71,7 @@ func (i IncomeModel) Insert() IncomeModel {
 		panic(err.Error())
 	}
 	i.ID = int(id)
-	return i
+	return i, nil
 }
 
 func (i IncomeModel) Update(id int) IncomeModel {
@@ -92,4 +96,18 @@ func (i IncomeModel) Destroy(id int) IncomeModel {
 	rs.Exec(id)
 	i.ID = id
 	return i
+}
+
+func incomeValidate(i IncomeModel) []Errors {
+	var errs []Errors
+	if i.Title == "" {
+		errs = append(errs, Errors{"title", "The title field is required"})
+	}
+	if i.Client.ID > 0 {
+		errs = append(errs, Errors{"client_id", "The client_id field is required"})
+	}
+	if i.Total < 0 {
+		errs = append(errs, Errors{"total", "The total field must be greater than 0"})
+	}
+	return errs
 }
