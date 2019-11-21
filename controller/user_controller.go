@@ -61,8 +61,14 @@ func (u UserController) Update() http.HandlerFunc {
 		reqBody, _ := ioutil.ReadAll(r.Body)
 		json.Unmarshal(reqBody, &user)
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(user.Update(id))
+		uNew, err := user.Update(id)
+		if err != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			json.NewEncoder(w).Encode(err)
+		} else {
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(uNew)
+		}
 	}
 }
 

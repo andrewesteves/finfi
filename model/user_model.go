@@ -71,7 +71,11 @@ func (u UserModel) Insert() (UserModel, []Errors) {
 	return u, nil
 }
 
-func (u UserModel) Update(id int) UserModel {
+func (u UserModel) Update(id int) (UserModel, []Errors) {
+	if hasErrors := userValidate(u); len(hasErrors) > 0 {
+		return u, hasErrors
+	}
+
 	db := storage.Connection()
 	defer db.Close()
 	user := u.Find(id)
@@ -90,7 +94,7 @@ func (u UserModel) Update(id int) UserModel {
 	}
 	rs.Exec(u.Name, u.Email, u.Password, u.Role, id)
 	u.ID = id
-	return u
+	return u, nil
 }
 
 func (u UserModel) Destroy(id int) UserModel {
