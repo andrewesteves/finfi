@@ -74,7 +74,11 @@ func (i IncomeModel) Insert() (IncomeModel, []Errors) {
 	return i, nil
 }
 
-func (i IncomeModel) Update(id int) IncomeModel {
+func (i IncomeModel) Update(id int) (IncomeModel, []Errors) {
+	if hasErrors := incomeValidate(i); len(hasErrors) > 0 {
+		return i, hasErrors
+	}
+
 	db := storage.Connection()
 	defer db.Close()
 	rs, err := db.Prepare("UPDATE incomes SET title = ?, description = ?, status = ?, installments = ?, total = ?, expired_at = ?, paid_at = ?, updated_at = now() WHERE id = ?")
@@ -83,7 +87,7 @@ func (i IncomeModel) Update(id int) IncomeModel {
 	}
 	rs.Exec(i.Title, i.Description, i.Status, i.Installments, i.Total, i.ExpiredAt, i.PaidAt, id)
 	i.ID = id
-	return i
+	return i, nil
 }
 
 func (i IncomeModel) Destroy(id int) IncomeModel {
