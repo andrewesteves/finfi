@@ -42,11 +42,12 @@ func (c ClientController) Store() http.HandlerFunc {
 		reqBody, _ := ioutil.ReadAll(r.Body)
 		json.Unmarshal(reqBody, &client)
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
 		cNew, err := client.Insert()
 		if err != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
 			json.NewEncoder(w).Encode(err)
 		} else {
+			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(cNew)
 		}
 	}
@@ -61,11 +62,12 @@ func (c ClientController) Update() http.HandlerFunc {
 		reqBody, _ := ioutil.ReadAll(r.Body)
 		json.Unmarshal(reqBody, &client)
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
 		cNew, err := client.Update(id)
 		if err != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
 			json.NewEncoder(w).Encode(err)
 		} else {
+			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(cNew)
 		}
 	}

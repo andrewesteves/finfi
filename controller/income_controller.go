@@ -42,11 +42,12 @@ func (i IncomeController) Store() http.HandlerFunc {
 		reqBody, _ := ioutil.ReadAll(r.Body)
 		json.Unmarshal(reqBody, &income)
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
 		iNew, err := income.Insert()
 		if err != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
 			json.NewEncoder(w).Encode(err)
 		} else {
+			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(iNew)
 		}
 	}

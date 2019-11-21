@@ -42,11 +42,12 @@ func (u UserController) Store() http.HandlerFunc {
 		reqBody, _ := ioutil.ReadAll(r.Body)
 		json.Unmarshal(reqBody, &user)
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
 		uNew, err := user.Insert()
 		if err != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
 			json.NewEncoder(w).Encode(err)
 		} else {
+			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(uNew)
 		}
 	}
