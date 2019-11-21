@@ -97,7 +97,12 @@ func (u UserModel) Update(id int) (UserModel, []Errors) {
 	return u, nil
 }
 
-func (u UserModel) Destroy(id int) UserModel {
+func (u UserModel) Destroy(id int) (UserModel, []Errors) {
+	if id < 1 {
+		var errs []Errors
+		errs = append(errs, Errors{"id", "The id field is required"})
+		return u, errs
+	}
 	db := storage.Connection()
 	defer db.Close()
 	rs, err := db.Prepare("DELETE FROM users WHERE id = ?")
@@ -106,7 +111,7 @@ func (u UserModel) Destroy(id int) UserModel {
 	}
 	rs.Exec(id)
 	u.ID = id
-	return u
+	return u, nil
 }
 
 func userValidate(u UserModel) []Errors {
