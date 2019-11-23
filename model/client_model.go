@@ -84,7 +84,13 @@ func (c ClientModel) Update(id int) (ClientModel, []Errors) {
 	return c, nil
 }
 
-func (c ClientModel) Destroy(id int) ClientModel {
+func (c ClientModel) Destroy(id int) (ClientModel, []Errors) {
+	if id < 1 {
+		var errs []Errors
+		errs = append(errs, Errors{"id", "The id field is required"})
+		return c, errs
+	}
+
 	db := storage.Connection()
 	defer db.Close()
 	rs, err := db.Prepare("DELETE FROM clients WHERE id = ?")
@@ -93,7 +99,7 @@ func (c ClientModel) Destroy(id int) ClientModel {
 	}
 	rs.Exec(id)
 	c.ID = id
-	return c
+	return c, nil
 }
 
 func clientValidate(c ClientModel) []Errors {
