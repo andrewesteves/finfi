@@ -80,7 +80,13 @@ func (i IncomeController) Destroy() http.HandlerFunc {
 		param := vars["id"]
 		id, _ := strconv.Atoi(param)
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(income.Destroy(id))
+		iNew, err := income.Destroy(id)
+		if err != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			json.NewEncoder(w).Encode(err)
+		} else {
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(iNew)
+		}
 	}
 }

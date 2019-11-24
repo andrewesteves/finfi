@@ -90,7 +90,13 @@ func (i IncomeModel) Update(id int) (IncomeModel, []Errors) {
 	return i, nil
 }
 
-func (i IncomeModel) Destroy(id int) IncomeModel {
+func (i IncomeModel) Destroy(id int) (IncomeModel, []Errors) {
+	if id < 1 {
+		var errs []Errors
+		errs = append(errs, Errors{"id", "The id field is required"})
+		return i, errs
+	}
+
 	db := storage.Connection()
 	defer db.Close()
 	rs, err := db.Prepare("DELETE FROM incomes WHERE id = ?")
@@ -99,7 +105,7 @@ func (i IncomeModel) Destroy(id int) IncomeModel {
 	}
 	rs.Exec(id)
 	i.ID = id
-	return i
+	return i, nil
 }
 
 func incomeValidate(i IncomeModel) []Errors {
