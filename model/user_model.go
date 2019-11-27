@@ -114,6 +114,21 @@ func (u UserModel) Destroy(id int) (UserModel, []Errors) {
 	return u, nil
 }
 
+func (u UserModel) Login() (UserModel, []Errors) {
+	var user UserModel
+	db := storage.Connection()
+	defer db.Close()
+	err := db.QueryRow("SELECT id, name, email, password, role, api_token FROM users WHERE email = ?", u.Email).Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Role, &user.ApiToken)
+	if err != nil {
+		panic(err.Error())
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(u.Password))
+	if err != nil {
+		panic(err.Error())
+	}
+	return user, nil
+}
+
 func userValidate(u UserModel) []Errors {
 	var errs []Errors
 	if u.Name == "" {

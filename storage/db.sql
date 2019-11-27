@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
 	email VARCHAR(255) NOT NULL,
 	password VARCHAR(255) NOT NULL,
 	role VARCHAR(255),
+	api_token VARCHAR(255),
 	created_at DATETIME,
 	updated_at DATETIME
 );
